@@ -13,20 +13,6 @@ st.set_page_config(page_title="PragyanAI Dashboard", layout="wide")
 # -----------------------
 st.markdown("""
 <style>
-/* REMOVE TAB UNDERLINE / INDICATOR */
-[data-baseweb="tab-highlight"] {
-    display: none !important;
-}
-
-/* REMOVE EXTRA BOTTOM BORDER */
-[data-baseweb="tab"] {
-    border-bottom: none !important;
-}
-
-/* OPTIONAL: clean tabs */
-[data-baseweb="tab-list"] {
-    border-bottom: none !important;
-}
 /* TAB TEXT COLOR FIX */
 button[data-baseweb="tab"] {
     color: black !important;
