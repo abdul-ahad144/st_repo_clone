@@ -14,9 +14,6 @@ st.set_page_config(page_title="PragyanAI Dashboard", layout="wide")
 st.markdown("""
 <style>
 
-st.markdown("""
-<style>
-
 /* REMOVE CURVE (U SHAPE) */
 [data-baseweb="tab-highlight"] {
     height: 3px !important;
