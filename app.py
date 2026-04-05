@@ -10,6 +10,9 @@ st.set_page_config(page_title="PragyanAI Dashboard", layout="wide")
 
 # -----------------------
 # CUSTOM CSS
+# -----------------------
+st.markdown("""
+<style>
 /* TAB TEXT COLOR FIX */
 button[data-baseweb="tab"] {
     color: black !important;
@@ -21,9 +24,6 @@ button[data-baseweb="tab"][aria-selected="true"] {
     color: black !important;
     border-bottom: 3px solid red;
 }
-# -----------------------
-st.markdown("""
-<style>
 
 /* BACKGROUND */
 body {
