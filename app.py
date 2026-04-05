@@ -317,6 +317,9 @@ st.markdown("## 🏆 Top Students")
 if "CGPA" in df.columns:
     st.dataframe(df.sort_values(by="CGPA", ascending=False).head(10))
 
+top = top.drop(columns=["Failed_Stage"], errors="ignore")
+st.dataframe(top, hide_index=True)
+
 # -----------------------
 # INSIGHTS
 # -----------------------
