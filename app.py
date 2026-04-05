@@ -1,0 +1,250 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+from utils.metrics import *
+
+# -----------------------
+# PAGE CONFIG
+# -----------------------
+st.set_page_config(page_title="PragyanAI Dashboard", layout="wide")
+
+# -----------------------
+# CUSTOM CSS
+# -----------------------
+st.markdown("""
+<style>
+.metric-card {
+    background-color: #111;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -----------------------
+# TITLE
+# -----------------------
+st.markdown("<h1 style='text-align: center;'>🚀 PragyanAI Placement Intelligence Engine</h1>", unsafe_allow_html=True)
+
+# -----------------------
+# LOAD DATA
+# -----------------------
+@st.cache_data
+def load_data():
+    url = "https://raw.githubusercontent.com/pragyanaischool/VTU_Internship_DataSets/refs/heads/main/student_data_placement_interview_funnel_analysis_project_10.csv"
+    
+    try:
+        df = pd.read_csv(url)
+    except:
+        df = pd.read_csv(url, encoding='latin1', on_bad_lines='skip')
+    
+    return df
+
+df = load_data()
+df.columns = df.columns.str.strip()
+
+# -----------------------
+# SIDEBAR FILTERS
+# -----------------------
+st.sidebar.header("🔍 Filters")
+
+domain = st.sidebar.multiselect(
+    "Domain",
+    df["Domain"].unique() if "Domain" in df.columns else []
+)
+
+company = st.sidebar.multiselect(
+    "Company Tier",
+    df["Company_Tier"].unique() if "Company_Tier" in df.columns else []
+)
+
+role = st.sidebar.multiselect(
+    "Job Role",
+    df["Job_Role"].unique() if "Job_Role" in df.columns else []
+)
+
+# -----------------------
+# BUTTONS
+# -----------------------
+apply_filter = st.sidebar.button("Apply Filters")
+reset_filter = st.sidebar.button("Reset Filters")
+
+# APPLY FILTERS
+if apply_filter:
+    if domain:
+        df = df[df["Domain"].isin(domain)]
+
+    if company:
+        df = df[df["Company_Tier"].isin(company)]
+
+    if role:
+        df = df[df["Job_Role"].isin(role)]
+
+# RESET FILTER
+if reset_filter:
+    st.rerun()
+
+# -----------------------
+# KPI CARDS
+# -----------------------
+st.markdown("## 📊 Overview")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.markdown(f"<div class='metric-card'><h3>Students</h3><h2>{len(df)}</h2></div>", unsafe_allow_html=True)
+
+col2.markdown(f"<div class='metric-card'><h3>Success Rate</h3><h2>{interview_success_rate(df):.2%}</h2></div>", unsafe_allow_html=True)
+
+col3.markdown(f"<div class='metric-card'><h3>Efficiency</h3><h2>{round_efficiency(df):.2%}</h2></div>", unsafe_allow_html=True)
+
+col4.markdown(f"<div class='metric-card'><h3>Placed</h3><h2>{df['Joined'].sum() if 'Joined' in df.columns else 0}</h2></div>", unsafe_allow_html=True)
+
+# -----------------------
+# SAFE GROUPBY
+# -----------------------
+def safe_groupby(col):
+    if col in df.columns:
+        return df.groupby(col)["Joined"].mean()
+    return None
+
+# -----------------------
+# TABS
+# -----------------------
+tab1, tab2, tab3, tab4 = st.tabs([
+    "📉 Funnel",
+    "🔥 Failures",
+    "💼 Roles & Salary",
+    "🧠 Skills & Insights"
+])
+
+# -----------------------
+# FUNNEL
+# -----------------------
+with tab1:
+    st.subheader("Placement Funnel")
+
+    if "Applied" in df.columns:
+        funnel = {
+            "Applied": df["Applied"].sum(),
+            "Shortlisted": df["Shortlisted"].sum(),
+            "Interview": df["Interview_Attended"].sum(),
+            "Offer": df["Offer_Received"].sum(),
+            "Joined": df["Joined"].sum()
+        }
+        st.bar_chart(funnel)
+
+# -----------------------
+# FAILURE
+# -----------------------
+with tab2:
+    st.subheader("Failure Analysis")
+
+    if "Failed_Stage" in df.columns:
+        st.bar_chart(df["Failed_Stage"].value_counts())
+
+# -----------------------
+# ROLE + SALARY
+# -----------------------
+with tab3:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if "Job_Role" in df.columns:
+            st.subheader("Role Distribution")
+            st.bar_chart(df["Job_Role"].value_counts())
+
+    with col2:
+        if "Salary_LPA" in df.columns:
+            st.subheader("Salary Distribution")
+            fig, ax = plt.subplots()
+            ax.hist(df["Salary_LPA"], bins=30)
+            st.pyplot(fig)
+
+# -----------------------
+# SKILLS
+# -----------------------
+with tab4:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        skill = safe_groupby("Skill_Programs_Completed")
+        if skill is not None:
+            st.subheader("Skill Impact")
+            st.bar_chart(skill)
+
+        intern = safe_groupby("Internship_Count")
+        if intern is not None:
+            st.subheader("Internship Impact")
+            st.bar_chart(intern)
+
+    with col2:
+        proj = safe_groupby("Projects_Count")
+        if proj is not None:
+            st.subheader("Project Impact")
+            st.bar_chart(proj)
+
+        domain_gap = safe_groupby("Domain")
+        if domain_gap is not None:
+            st.subheader("Domain Gap")
+            st.bar_chart(domain_gap)
+
+# -----------------------
+# EXTRA COMPONENTS
+# -----------------------
+st.markdown("## 🎯 Placement Probability Calculator")
+
+cgpa = st.slider("CGPA", 0.0, 10.0, 7.0)
+skills = st.slider("Skill Programs", 0, 5, 2)
+projects = st.slider("Projects", 0, 10, 3)
+internships = st.slider("Internships", 0, 5, 1)
+
+prob = (cgpa + skills + projects + internships) / 25
+st.metric("Estimated Probability", f"{prob:.2%}")
+
+# -----------------------
+# STUDENT SEARCH
+# -----------------------
+st.markdown("## 🔍 Student Search")
+
+if "Student_ID" in df.columns:
+    sid = st.text_input("Enter Student ID")
+    if sid:
+        result = df[df["Student_ID"].astype(str) == sid]
+        if not result.empty:
+            st.dataframe(result)
+        else:
+            st.warning("Not found")
+
+# -----------------------
+# DOWNLOAD
+# -----------------------
+st.markdown("## 📥 Download Data")
+
+csv = df.to_csv(index=False).encode('utf-8')
+st.download_button("Download CSV", csv, "data.csv", "text/csv")
+
+# -----------------------
+# TOP STUDENTS
+# -----------------------
+st.markdown("## 🏆 Top Students")
+
+if "CGPA" in df.columns:
+    st.dataframe(df.sort_values(by="CGPA", ascending=False).head(10))
+
+# -----------------------
+# INSIGHTS
+# -----------------------
+st.markdown("## 📌 Key Insights")
+
+st.success("Interview stage biggest bottleneck")
+st.warning("Coding + Tech rounds cause failure")
+st.info("Projects + internships boost success")
+st.error("GenAI roles hardest")
+
+# -----------------------
+# FOOTER
+# -----------------------
+st.markdown("---")
+st.markdown("🚀 Built with Streamlit | PragyanAI Engine")
