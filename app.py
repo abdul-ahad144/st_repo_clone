@@ -13,6 +13,25 @@ st.set_page_config(page_title="PragyanAI Dashboard", layout="wide")
 # -----------------------
 st.markdown("""
 <style>
+
+st.markdown("""
+<style>
+
+/* REMOVE CURVE (U SHAPE) */
+[data-baseweb="tab-highlight"] {
+    height: 3px !important;
+    background-color: orange !important;
+    border-radius: 0px !important;  /* 🔥 IMPORTANT */
+}
+
+/* REMOVE EXTRA SHAPE FROM TAB */
+[data-baseweb="tab"] {
+    border-radius: 0px !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 /* TAB TEXT COLOR FIX */
 button[data-baseweb="tab"] {
     color: black !important;
