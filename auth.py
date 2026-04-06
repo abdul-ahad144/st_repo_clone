@@ -5,17 +5,41 @@ ADMIN_USER = "admin"
 ADMIN_PASS = "1234"
 
 def load_users():
+    import os
+    import pandas as pd
 
-    if not os.path.exists("users.csv"):
+    ADMIN_USER = "admin"
+    ADMIN_PASS = "1234"
+
+    file_path = "users.csv"
+
+    # -----------------------
+    # SAFE READ
+    # -----------------------
+    try:
+        df = pd.read_csv(file_path)
+
+        # structure check
+        if "username" not in df.columns or "password" not in df.columns:
+            raise Exception("Invalid structure")
+
+    except:
+        # ANY ERROR → RESET FILE
         df = pd.DataFrame(columns=["username", "password"])
-        df.to_csv("users.csv", index=False)
+        df.to_csv(file_path, index=False)
 
-    if os.stat("users.csv").st_size == 0:
-        df = pd.DataFrame(columns=["username", "password"])
-        df.to_csv("users.csv", index=False)
+    # -----------------------
+    # ADD ADMIN
+    # -----------------------
+    if ADMIN_USER not in df["username"].values:
+        admin_row = pd.DataFrame(
+            [[ADMIN_USER, ADMIN_PASS]],
+            columns=["username", "password"]
+        )
+        df = pd.concat([df, admin_row], ignore_index=True)
+        df.to_csv(file_path, index=False)
 
-    df = pd.read_csv("users.csv")
-
+    return df
     # ADMIN ADD
     if ADMIN_USER not in df["username"].values:
         df = pd.concat(
