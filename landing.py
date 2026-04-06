@@ -4,48 +4,55 @@ from auth import login_user, register_user
 def landing_page():
 
     # -----------------------
-    # PAGE STYLE
+    # CSS FIXED (CENTER + COLORS)
     # -----------------------
     st.markdown("""
     <style>
+
+    /* Background */
     .main {
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        background: linear-gradient(135deg, #eef2f3, #dfe9f3);
     }
 
-    .center-box {
+    /* Center container */
+    .block-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 80vh;
+        height: 100vh;
     }
 
+    /* Card */
     .card {
-        background: rgba(255, 255, 255, 0.1);
+        background: white;
         padding: 40px;
         border-radius: 20px;
-        backdrop-filter: blur(15px);
-        width: 400px;
-        text-align: center;
-        box-shadow: 0px 0px 30px rgba(0,0,0,0.3);
+        width: 420px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
     }
 
+    /* Title */
     .title {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: bold;
-        color: white;
+        color: #222;
+        text-align: center;
     }
 
     .subtitle {
-        color: #ddd;
+        text-align: center;
+        color: #666;
         margin-bottom: 20px;
     }
 
-    .stTextInput > div > div > input {
-        background-color: rgba(255,255,255,0.2);
-        color: white;
+    /* Input fields */
+    .stTextInput input {
+        background-color: #f5f5f5 !important;
+        color: black !important;
         border-radius: 10px;
     }
 
+    /* Button */
     .stButton button {
         width: 100%;
         border-radius: 10px;
@@ -54,45 +61,43 @@ def landing_page():
         font-weight: bold;
         margin-top: 10px;
     }
+
     </style>
     """, unsafe_allow_html=True)
 
     # -----------------------
-    # CENTER ALIGNMENT
+    # CENTER CARD
     # -----------------------
-    st.markdown('<div class="center-box">', unsafe_allow_html=True)
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1,2,1])
 
-    st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    option = st.radio("", ["Login", "Register"], horizontal=True)
+        st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
+        st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+        option = st.radio("", ["Login", "Register"], horizontal=True)
 
-    # -----------------------
-    # LOGIN
-    # -----------------------
-    if option == "Login":
-        if st.button("🔐 Login"):
-            if login_user(username, password):
-                st.session_state.logged_in = True
-                st.session_state.page = "dashboard"
-                st.success("Login Successful")
-                st.rerun()
-            else:
-                st.error("Invalid Credentials")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
-    # -----------------------
-    # REGISTER
-    # -----------------------
-    else:
-        if st.button("📝 Register"):
-            if register_user(username, password):
-                st.success("Registered Successfully")
-            else:
-                st.error("User already exists")
+        # LOGIN
+        if option == "Login":
+            if st.button("🔐 Login"):
+                if login_user(username, password):
+                    st.session_state.logged_in = True
+                    st.session_state.page = "dashboard"
+                    st.success("Login Successful")
+                    st.rerun()
+                else:
+                    st.error("Invalid Credentials")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        # REGISTER
+        else:
+            if st.button("📝 Register"):
+                if register_user(username, password):
+                    st.success("Registered Successfully")
+                else:
+                    st.error("User already exists")
+
+        st.markdown('</div>', unsafe_allow_html=True)
