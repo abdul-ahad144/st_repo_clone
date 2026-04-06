@@ -5,22 +5,13 @@ from utils.metrics import *
 
 def dashboard():
 
-    # -----------------------
-    # PAGE CONFIG (REMOVE from here ❌)
-    # -----------------------
-    # st.set_page_config(...) ❌ (ye app.py mein rahega)
-
-    # -----------------------
     # LOGOUT BUTTON
-    # -----------------------
     if st.button("🚪 Logout"):
         st.session_state.logged_in = False
         st.session_state.page = "landing"
         st.rerun()
 
-    # -----------------------
     # CUSTOM CSS
-    # -----------------------
     st.markdown("""
     <style>
     button[data-baseweb="tab"] {
@@ -41,14 +32,9 @@ def dashboard():
     </style>
     """, unsafe_allow_html=True)
 
-    # -----------------------
-    # TITLE
-    # -----------------------
     st.title("🚀 PragyanAI Placement Intelligence Engine")
 
-    # -----------------------
     # LOAD DATA
-    # -----------------------
     @st.cache_data
     def load_data():
         url = "https://raw.githubusercontent.com/pragyanaischool/VTU_Internship_DataSets/refs/heads/main/student_data_placement_interview_funnel_analysis_project_10.csv"
@@ -61,19 +47,14 @@ def dashboard():
     df = load_data()
     df.columns = df.columns.str.strip()
 
-    # -----------------------
-    # SIDEBAR FILTERS
-    # -----------------------
+    # SIDEBAR
     st.sidebar.header("🔍 Filters")
 
     domain = st.sidebar.multiselect("Domain", df["Domain"].unique())
     company = st.sidebar.multiselect("Company Tier", df["Company_Tier"].unique())
     role = st.sidebar.multiselect("Job Role", df["Job_Role"].unique())
 
-    apply_filter = st.sidebar.button("Apply Filters")
-    reset_filter = st.sidebar.button("Reset Filters")
-
-    if apply_filter:
+    if st.sidebar.button("Apply Filters"):
         if domain:
             df = df[df["Domain"].isin(domain)]
         if company:
@@ -81,12 +62,10 @@ def dashboard():
         if role:
             df = df[df["Job_Role"].isin(role)]
 
-    if reset_filter:
+    if st.sidebar.button("Reset Filters"):
         st.rerun()
 
-    # -----------------------
     # KPI
-    # -----------------------
     st.subheader("📊 Overview")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -96,9 +75,7 @@ def dashboard():
     col3.metric("Efficiency", f"{round_efficiency(df):.2%}")
     col4.metric("Placed", df["Joined"].sum())
 
-    # -----------------------
     # TABS
-    # -----------------------
     tab1, tab2, tab3, tab4 = st.tabs([
         "📉 Funnel",
         "🔥 Failures",
@@ -107,36 +84,29 @@ def dashboard():
     ])
 
     with tab1:
-        st.subheader("Placement Funnel")
-        funnel = {
+        st.bar_chart({
             "Applied": df["Applied"].sum(),
             "Shortlisted": df["Shortlisted"].sum(),
             "Interview": df["Interview_Attended"].sum(),
             "Offer": df["Offer_Received"].sum(),
             "Joined": df["Joined"].sum()
-        }
-        st.bar_chart(funnel)
+        })
 
     with tab2:
-        st.subheader("Failure Analysis")
         st.bar_chart(df["Failed_Stage"].value_counts())
 
     with tab3:
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("Role Distribution")
             st.bar_chart(df["Job_Role"].value_counts())
 
         with col2:
-            st.subheader("Salary Distribution")
             fig, ax = plt.subplots()
             ax.hist(df["Salary_LPA"], bins=30)
             st.pyplot(fig)
 
     with tab4:
-        st.subheader("Skill Impact")
-
         if "Skill_Programs" in df.columns:
             st.bar_chart(df.groupby("Skill_Programs")["Joined"].mean())
 
@@ -146,9 +116,7 @@ def dashboard():
         if "Projects" in df.columns:
             st.bar_chart(df.groupby("Projects")["Joined"].mean())
 
-    # -----------------------
-    # EXTRA COMPONENTS
-    # -----------------------
+    # EXTRA
     st.markdown("## 🎯 Placement Probability Calculator")
 
     cgpa = st.slider("CGPA", 0.0, 10.0, 7.0)
@@ -159,9 +127,7 @@ def dashboard():
     prob = (cgpa + skills + projects + internships) / 25
     st.metric("Estimated Probability", f"{prob:.2%}")
 
-    # -----------------------
-    # STUDENT SEARCH
-    # -----------------------
+    # SEARCH
     st.subheader("🔍 Student Search")
 
     sid = st.text_input("Enter Student ID")
@@ -171,34 +137,25 @@ def dashboard():
         result = result.drop(columns=["Failed_Stage"], errors="ignore")
         st.dataframe(result, hide_index=True)
 
-    # -----------------------
     # DOWNLOAD
-    # -----------------------
     st.subheader("📥 Download Data")
 
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button("Download CSV", csv, "data.csv")
 
-    # -----------------------
     # TOP STUDENTS
-    # -----------------------
     st.subheader("🏆 Top Students")
 
     top = df.sort_values(by="CGPA", ascending=False).head(10)
     top = top.drop(columns=["Failed_Stage"], errors="ignore")
     st.dataframe(top, hide_index=True)
 
-    # -----------------------
     # INSIGHTS
-    # -----------------------
     st.subheader("📌 Insights")
 
     st.write("Interview stage biggest bottleneck")
     st.write("Coding + Tech failures high")
     st.write("Projects + internships boost success")
 
-    # -----------------------
-    # FOOTER
-    # -----------------------
     st.markdown("---")
     st.write("🚀 Built with Streamlit")
