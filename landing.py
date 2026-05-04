@@ -3,7 +3,7 @@ from auth import login_user, register_user
 
 def landing_page():
 
-    # -------- Background --------
+    # -------- UI --------
     st.markdown("""
     <style>
     .stApp {
@@ -12,7 +12,6 @@ def landing_page():
 
     header {visibility: hidden;}
 
-    /* Input underline style */
     .stTextInput input {
         background: transparent !important;
         border: none !important;
@@ -36,19 +35,29 @@ def landing_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # -------- CENTER USING COLUMNS --------
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # -------- STATE --------
+    if "forgot" not in st.session_state:
+        st.session_state.forgot = False
+
+    # -------- CENTER --------
+    col1, col2, col3 = st.columns([1,2,1])
 
     with col2:
 
         st.markdown("<h2 style='text-align:center;'>User Login</h2>", unsafe_allow_html=True)
 
-        option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
+        option = st.radio("", ["Login", "Register"], horizontal=True)
 
         username = st.text_input("Email ID")
         password = st.text_input("Password", type="password")
 
-        # LOGIN
+        # -------- FORGOT BUTTON --------
+        colA, colB = st.columns([1,1])
+        with colB:
+            if st.button("Forgot Password?"):
+                st.session_state.forgot = True
+
+        # -------- LOGIN --------
         if option == "Login":
             if st.button("LOGIN"):
                 if login_user(username, password):
@@ -59,10 +68,47 @@ def landing_page():
                 else:
                     st.error("Invalid Credentials")
 
-        # REGISTER
+        # -------- REGISTER --------
         else:
+            question = st.selectbox("Security Question", [
+                "Your favourite pet?",
+                "Your childhood school?",
+                "Your favourite colour?"
+            ])
+
+            answer = st.text_input("Answer")
+
             if st.button("REGISTER"):
-                if register_user(username, password):
+                if register_user(username, password, question, answer):
                     st.success("Registered Successfully")
                 else:
                     st.error("User already exists")
+
+        # -------- FORGOT PASSWORD FLOW --------
+        if st.session_state.forgot:
+
+            from auth import get_security_question, verify_answer, reset_password
+
+            st.markdown("---")
+            st.subheader("Reset Password")
+
+            fp_username = st.text_input("Enter Username")
+
+            if fp_username:
+                question = get_security_question(fp_username)
+
+                if question:
+                    st.write(f"Security Question: {question}")
+
+                    answer = st.text_input("Answer")
+                    new_pass = st.text_input("New Password", type="password")
+
+                    if st.button("Reset Password"):
+                        if verify_answer(fp_username, answer):
+                            reset_password(fp_username, new_pass)
+                            st.success("Password Reset Successful")
+                            st.session_state.forgot = False
+                        else:
+                            st.error("Wrong Answer")
+                else:
+                    st.error("User not found")
