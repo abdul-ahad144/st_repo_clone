@@ -1,73 +1,74 @@
 import streamlit as st
-import pandas as pd
-from auth import login_user, register_user, FILE
+from auth import login_user, register_user
 
 def landing_page():
 
-    # ---------------- SASSY UI ----------------
+    # ---------------- CLEAN LIGHT UI ----------------
     st.markdown("""
     <style>
 
-    /* Background */
+    /* Light Royal Blue Background */
     .stApp {
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        background: linear-gradient(135deg, #dbeafe, #eff6ff);
     }
 
-    /* Glass Card */
+    /* Remove top blank box */
+    header, .block-container > div:first-child {
+        display: none;
+    }
+
+    /* Center Card */
     .card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 40px;
-        max-width: 420px;
-        margin: 80px auto;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(12px);
+        border-radius: 18px;
+        padding: 35px;
+        max-width: 400px;
+        margin: 100px auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     /* Title */
     .title {
-        font-size: 30px;
+        font-size: 28px;
         font-weight: bold;
         text-align: center;
-        color: white;
+        color: #1e3a8a;
     }
 
     .subtitle {
         text-align: center;
-        color: #ddd;
-        margin-bottom: 25px;
+        color: #475569;
+        margin-bottom: 20px;
     }
 
-    /* Inputs */
+    /* Input */
     .stTextInput input {
-        background: rgba(255,255,255,0.2) !important;
-        color: white !important;
-        border-radius: 10px;
-        border: none;
+        border-radius: 10px !important;
+        padding: 10px;
+        border: 1px solid #cbd5f5;
     }
 
     /* Button */
     .stButton button {
         width: 100%;
-        border-radius: 12px;
-        background: linear-gradient(45deg, #ff512f, #dd2476);
+        border-radius: 10px;
+        background: #3b82f6;
         color: white;
         font-weight: bold;
-        padding: 12px;
+        padding: 10px;
         border: none;
         transition: 0.3s;
     }
 
     .stButton button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px #ff512f;
+        background: #2563eb;
+        transform: scale(1.03);
     }
 
-    /* Radio */
+    /* Radio center */
     .stRadio > div {
         justify-content: center;
-        color: white;
     }
 
     </style>
@@ -99,7 +100,7 @@ def landing_page():
     else:
         if st.button("Register"):
             if register_user(username, password):
-                st.success("Registered Successfully, now Login")
+                st.success("Registered Successfully")
             else:
                 st.error("User already exists")
 
