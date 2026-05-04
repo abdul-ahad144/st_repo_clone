@@ -1,5 +1,5 @@
 import streamlit as st
-from auth import login_user, register_user
+from auth import login_user, register_user, get_security_question, verify_answer, reset_password
 
 def landing_page():
 
@@ -51,25 +51,28 @@ def landing_page():
         username = st.text_input("Email ID")
         password = st.text_input("Password", type="password")
 
-        # -------- FORGOT BUTTON --------
-        colA, colB = st.columns([1,1])
+        # -------- BUTTONS (PERFECT ALIGN) --------
+        colA, colB = st.columns(2)
+
+        with colA:
+            login_clicked = st.button("LOGIN")
+
         with colB:
-            if st.button("Forgot Password?"):
-                st.session_state.forgot = True
+            forgot_clicked = st.button("Forgot Password?")
 
         # -------- LOGIN --------
-        if option == "Login":
-            if st.button("LOGIN"):
-                if login_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.page = "dashboard"
-                    st.session_state.user = username
-                    st.rerun()
-                else:
-                    st.error("Invalid Credentials")
+        if option == "Login" and login_clicked:
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.page = "dashboard"
+                st.session_state.user = username
+                st.rerun()
+            else:
+                st.error("Invalid Credentials")
 
         # -------- REGISTER --------
-        else:
+        if option == "Register":
+
             question = st.selectbox("Security Question", [
                 "Your favourite pet?",
                 "Your childhood school?",
@@ -84,10 +87,12 @@ def landing_page():
                 else:
                     st.error("User already exists")
 
-        # -------- FORGOT PASSWORD FLOW --------
-        if st.session_state.forgot:
+        # -------- FORGOT CLICK --------
+        if forgot_clicked:
+            st.session_state.forgot = True
 
-            from auth import get_security_question, verify_answer, reset_password
+        # -------- RESET FLOW --------
+        if st.session_state.forgot:
 
             st.markdown("---")
             st.subheader("Reset Password")
