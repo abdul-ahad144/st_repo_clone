@@ -1,5 +1,5 @@
 import streamlit as st
-from auth import login_user, register_user, get_security_question, verify_answer, reset_password
+from auth import login_user, register_user
 
 def landing_page():
 
@@ -35,14 +35,10 @@ def landing_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # -------- STATE --------
-    if "forgot" not in st.session_state:
-        st.session_state.forgot = False
-
     # -------- CENTER --------
-    col1, col2, col3 = st.columns([1,2,1])
+    left, center, right = st.columns([1,2,1])
 
-    with col2:
+    with center:
 
         st.markdown("<h2 style='text-align:center;'>User Login</h2>", unsafe_allow_html=True)
 
@@ -51,16 +47,10 @@ def landing_page():
         username = st.text_input("Email ID")
         password = st.text_input("Password", type="password")
 
-        # -------- BUTTONS (PERFECT ALIGN) --------
-        colA, colB = st.columns(2)
+        # -------- LOGIN BUTTON --------
+        login_clicked = st.button("LOGIN", use_container_width=True)
 
-        with colA:
-            login_clicked = st.button("LOGIN")
-
-        with colB:
-            forgot_clicked = st.button("Forgot Password?")
-
-        # -------- LOGIN --------
+        # -------- LOGIN LOGIC --------
         if option == "Login" and login_clicked:
             if login_user(username, password):
                 st.session_state.logged_in = True
@@ -81,39 +71,10 @@ def landing_page():
 
             answer = st.text_input("Answer")
 
-            if st.button("REGISTER"):
+            register_clicked = st.button("REGISTER", use_container_width=True)
+
+            if register_clicked:
                 if register_user(username, password, question, answer):
                     st.success("Registered Successfully")
                 else:
                     st.error("User already exists")
-
-        # -------- FORGOT CLICK --------
-        if forgot_clicked:
-            st.session_state.forgot = True
-
-        # -------- RESET FLOW --------
-        if st.session_state.forgot:
-
-            st.markdown("---")
-            st.subheader("Reset Password")
-
-            fp_username = st.text_input("Enter Username")
-
-            if fp_username:
-                question = get_security_question(fp_username)
-
-                if question:
-                    st.write(f"Security Question: {question}")
-
-                    answer = st.text_input("Answer")
-                    new_pass = st.text_input("New Password", type="password")
-
-                    if st.button("Reset Password"):
-                        if verify_answer(fp_username, answer):
-                            reset_password(fp_username, new_pass)
-                            st.success("Password Reset Successful")
-                            st.session_state.forgot = False
-                        else:
-                            st.error("Wrong Answer")
-                else:
-                    st.error("User not found")
