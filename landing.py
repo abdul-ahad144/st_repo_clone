@@ -4,7 +4,7 @@ from auth import login_user, register_user, FILE
 
 def landing_page():
 
-    # ---------------- UI DESIGN ----------------
+    # ---------------- SAFE UI ----------------
     st.markdown("""
     <style>
 
@@ -12,23 +12,17 @@ def landing_page():
         background: linear-gradient(135deg, #667eea, #764ba2);
     }
 
-    .main {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
     .card {
         background: white;
-        padding: 40px;
-        border-radius: 20px;
-        width: 380px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 400px;
+        margin: auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
     .title {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: bold;
         text-align: center;
     }
@@ -36,32 +30,21 @@ def landing_page():
     .subtitle {
         text-align: center;
         color: gray;
-        margin-bottom: 25px;
-    }
-
-    .stTextInput input {
-        border-radius: 10px !important;
-        padding: 10px;
+        margin-bottom: 20px;
     }
 
     .stButton button {
         width: 100%;
         border-radius: 10px;
-        background: linear-gradient(135deg, #ff7b00, #ff5100);
+        background: #ff7b00;
         color: white;
         font-weight: bold;
-        padding: 10px;
-    }
-
-    .stRadio > div {
-        justify-content: center;
     }
 
     </style>
     """, unsafe_allow_html=True)
 
-    # ---------------- MAIN CARD ----------------
-    st.markdown('<div class="main">', unsafe_allow_html=True)
+    # ---------------- CARD ----------------
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
@@ -92,15 +75,12 @@ def landing_page():
                 st.error("User already exists")
 
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # ---------------- ADMIN PANEL ----------------
     if st.session_state.get("user") == "admin":
 
         st.markdown("---")
         st.subheader("📁 Users Data (Admin Only)")
-
-        st.write("File Location:", FILE)
 
         if st.button("Show Users Data"):
             df = pd.read_csv(FILE)
