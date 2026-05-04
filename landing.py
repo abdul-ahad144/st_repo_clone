@@ -45,7 +45,7 @@ def landing_page():
 
         option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
-        username = st.text_input("Email ID")
+        username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
         # LOGIN
