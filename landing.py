@@ -4,22 +4,31 @@ from auth import login_user, register_user, FILE
 
 def landing_page():
 
+    # ---------------- UI DESIGN ----------------
     st.markdown("""
     <style>
+
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
     .main {
-        background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
     }
 
     .card {
         background: white;
         padding: 40px;
         border-radius: 20px;
-        width: 400px;
-        box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+        width: 380px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
     .title {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: bold;
         text-align: center;
     }
@@ -27,55 +36,65 @@ def landing_page():
     .subtitle {
         text-align: center;
         color: gray;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
+
+    .stTextInput input {
+        border-radius: 10px !important;
+        padding: 10px;
+    }
+
+    .stButton button {
+        width: 100%;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #ff7b00, #ff5100);
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+    }
+
+    .stRadio > div {
+        justify-content: center;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1,2,1])
+    # ---------------- MAIN CARD ----------------
+    st.markdown('<div class="main">', unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    with col2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
-        st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
+    option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
-        option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
 
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+    # ---------------- LOGIN ----------------
+    if option == "Login":
+        if st.button("Login"):
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.page = "dashboard"
+                st.session_state.user = username
+                st.rerun()
+            else:
+                st.error("Invalid Credentials")
 
-        # ------------------------
-        # LOGIN
-        # ------------------------
-        if option == "Login":
-            if st.button("Login"):
-                if login_user(username, password):
+    # ---------------- REGISTER ----------------
+    else:
+        if st.button("Register"):
+            if register_user(username, password):
+                st.success("Registered Successfully, now Login")
+            else:
+                st.error("User already exists")
 
-                    # Super-Important: Save login state
-                    st.session_state.logged_in = True
-                    st.session_state.page = "dashboard"
-                    st.session_state.user = username   # 👈 VERY IMPORTANT
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-                    st.rerun()
-                else:
-                    st.error("Invalid Credentials")
-
-        # ------------------------
-        # REGISTER
-        # ------------------------
-        else:
-            if st.button("Register"):
-                if register_user(username, password):
-                    st.success("Registered Successfully, now Login")
-                else:
-                    st.error("User already exists")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # ------------------------
-    # ADMIN PANEL (OUTSIDE CARD)
-    # ------------------------
+    # ---------------- ADMIN PANEL ----------------
     if st.session_state.get("user") == "admin":
 
         st.markdown("---")
@@ -89,4 +108,4 @@ def landing_page():
 
         if st.button("Download users.csv"):
             with open(FILE, "rb") as f:
-                st.download_button("Click to Download", f, file_name="users.csv")
+                st.download_button("Download File", f, file_name="users.csv")
