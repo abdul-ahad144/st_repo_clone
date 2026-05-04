@@ -54,11 +54,19 @@ def landing_page():
         st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
         st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
 
-        option = st.radio("", ["Login", "Register"], horizontal=True)
+        # Super-Important: Default Login
+        option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
+        # Super-Important: Empty check
+        if not username or not password:
+            st.warning("Enter username & password")
+            st.markdown('</div>', unsafe_allow_html=True)
+            return
+
+        # LOGIN
         if option == "Login":
             if st.button("Login"):
                 if login_user(username, password):
@@ -68,10 +76,11 @@ def landing_page():
                 else:
                     st.error("Invalid Credentials")
 
+        # REGISTER
         else:
             if st.button("Register"):
                 if register_user(username, password):
-                    st.success("Registered Successfully")
+                    st.success("Registered Successfully, now Login")
                 else:
                     st.error("User already exists")
 
