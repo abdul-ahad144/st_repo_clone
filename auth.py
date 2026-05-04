@@ -1,28 +1,33 @@
 import pandas as pd
 import os
 
-FILE = "users.csv"
+# Super-Important: Save file in same folder as auth.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE = os.path.join(BASE_DIR, "users.csv")
 
 ADMIN_USER = "admin"
 ADMIN_PASS = "1234"
 
 
 def load_users():
-    # Super-Important: File create if not exists
+    # Create file if not exists
     if not os.path.exists(FILE):
         df = pd.DataFrame(columns=["username", "password"])
         df.to_csv(FILE, index=False)
 
     df = pd.read_csv(FILE, dtype=str)
 
-    # Clean data
+    # Super-Important: Clean data
     df["username"] = df["username"].astype(str).str.strip()
     df["password"] = df["password"].astype(str).str.strip()
 
-    # Add admin if missing
+    # Ensure admin exists
     if ADMIN_USER not in df["username"].values:
-        new = pd.DataFrame([[ADMIN_USER, ADMIN_PASS]], columns=["username", "password"])
-        df = pd.concat([df, new], ignore_index=True)
+        admin_row = pd.DataFrame(
+            [[ADMIN_USER, ADMIN_PASS]],
+            columns=["username", "password"]
+        )
+        df = pd.concat([df, admin_row], ignore_index=True)
         df.to_csv(FILE, index=False)
 
     return df
@@ -31,16 +36,17 @@ def load_users():
 def register_user(username, password):
     df = load_users()
 
+    # Super-Important: Clean input
     username = str(username).strip()
     password = str(password).strip()
 
     if username in df["username"].values:
         return False
 
-    new = pd.DataFrame([[username, password]], columns=["username", "password"])
-    df = pd.concat([df, new], ignore_index=True)
+    new_user = pd.DataFrame([[username, password]], columns=["username", "password"])
+    df = pd.concat([df, new_user], ignore_index=True)
 
-    # Super-Important: Save file
+    # Save to file
     df.to_csv(FILE, index=False)
 
     return True
@@ -49,6 +55,7 @@ def register_user(username, password):
 def login_user(username, password):
     df = load_users()
 
+    # Super-Important: Clean input
     username = str(username).strip()
     password = str(password).strip()
 
