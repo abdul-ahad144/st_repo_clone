@@ -3,7 +3,6 @@ from auth import login_user, register_user
 
 def landing_page():
 
-    # ---------------- CLEAN LIGHT UI ----------------
     st.markdown("""
     <style>
 
@@ -12,20 +11,18 @@ def landing_page():
         background: linear-gradient(135deg, #dbeafe, #eff6ff);
     }
 
-    /* Remove top blank box */
-    header, .block-container > div:first-child {
-        display: none;
-    }
+    /* ONLY remove top header safely */
+    header {visibility: hidden;}
 
     /* Center Card */
     .card {
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
         border-radius: 18px;
         padding: 35px;
         max-width: 400px;
-        margin: 100px auto;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        margin: 120px auto;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
     /* Title */
@@ -42,7 +39,7 @@ def landing_page():
         margin-bottom: 20px;
     }
 
-    /* Input */
+    /* Inputs */
     .stTextInput input {
         border-radius: 10px !important;
         padding: 10px;
@@ -85,7 +82,6 @@ def landing_page():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    # ---------------- LOGIN ----------------
     if option == "Login":
         if st.button("Login"):
             if login_user(username, password):
@@ -96,7 +92,6 @@ def landing_page():
             else:
                 st.error("Invalid Credentials")
 
-    # ---------------- REGISTER ----------------
     else:
         if st.button("Register"):
             if register_user(username, password):
@@ -105,17 +100,3 @@ def landing_page():
                 st.error("User already exists")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-    # ---------------- ADMIN PANEL ----------------
-    if st.session_state.get("user") == "admin":
-
-        st.markdown("---")
-        st.subheader("📁 Users Data (Admin Only)")
-
-        if st.button("Show Users Data"):
-            df = pd.read_csv(FILE)
-            st.dataframe(df)
-
-        if st.button("Download users.csv"):
-            with open(FILE, "rb") as f:
-                st.download_button("Download File", f, file_name="users.csv")
