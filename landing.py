@@ -6,81 +6,84 @@ def landing_page():
     st.markdown("""
     <style>
 
-    /* Background */
+    /* Gradient Background */
     .stApp {
-        background: linear-gradient(135deg, #dbeafe, #eff6ff);
+        background: linear-gradient(135deg, #8ea6d1, #d4a5c9);
     }
 
-    /* Hide header only */
     header {visibility: hidden;}
 
-    /* Full screen center */
+    /* Center Layout */
     .center-box {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 80vh;
+        height: 85vh;
     }
 
-    /* Card */
-    .card {
-        background: rgba(255,255,255,0.7);
-        backdrop-filter: blur(12px);
-        border-radius: 18px;
-        padding: 35px;
-        width: 380px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    .login-box {
+        width: 350px;
+        text-align: center;
     }
 
     .title {
-        text-align: center;
-        font-size: 28px;
-        font-weight: bold;
-        color: #1e3a8a;
+        font-size: 32px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+        color: #1e293b;
     }
 
-    .subtitle {
-        text-align: center;
-        color: #475569;
-        margin-bottom: 20px;
-    }
-
+    /* Input style (underline look) */
     .stTextInput input {
-        border-radius: 10px !important;
-        border: 1px solid #cbd5f5;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 2px solid #1e293b !important;
+        border-radius: 0 !important;
+        color: #1e293b !important;
         padding: 10px;
     }
 
+    .stTextInput input:focus {
+        border-bottom: 2px solid #000 !important;
+        outline: none;
+    }
+
+    /* Button */
     .stButton button {
         width: 100%;
-        border-radius: 10px;
-        background: #3b82f6;
+        margin-top: 20px;
+        background: #0f2a44;
         color: white;
+        border-radius: 0;
+        padding: 12px;
         font-weight: bold;
-        padding: 10px;
+        letter-spacing: 1px;
     }
 
+    /* Radio */
     .stRadio > div {
         justify-content: center;
+        margin-bottom: 20px;
     }
 
     </style>
     """, unsafe_allow_html=True)
 
-    # -------- CENTER WRAPPER --------
+    # -------- CENTER --------
     st.markdown('<div class="center-box">', unsafe_allow_html=True)
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
 
-    st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">User Login</div>', unsafe_allow_html=True)
 
     option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
-    username = st.text_input("Username")
+    username = st.text_input("Email ID")
     password = st.text_input("Password", type="password")
 
+    # -------- LOGIN --------
     if option == "Login":
-        if st.button("Login"):
+        if st.button("LOGIN"):
             if login_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.page = "dashboard"
@@ -89,8 +92,9 @@ def landing_page():
             else:
                 st.error("Invalid Credentials")
 
+    # -------- REGISTER --------
     else:
-        if st.button("Register"):
+        if st.button("REGISTER"):
             if register_user(username, password):
                 st.success("Registered Successfully")
             else:
