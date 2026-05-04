@@ -1,5 +1,6 @@
 import streamlit as st
-from auth import login_user, register_user
+import pandas as pd
+from auth import login_user, register_user, FILE
 
 def landing_page():
 
@@ -20,7 +21,6 @@ def landing_page():
     .title {
         font-size: 26px;
         font-weight: bold;
-        color: black;
         text-align: center;
     }
 
@@ -28,20 +28,6 @@ def landing_page():
         text-align: center;
         color: gray;
         margin-bottom: 20px;
-    }
-
-    .stTextInput input {
-        background-color: #f5f5f5 !important;
-        color: black !important;
-        border-radius: 10px;
-    }
-
-    .stButton button {
-        width: 100%;
-        border-radius: 10px;
-        background-color: #ff7b00;
-        color: white;
-        font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -54,19 +40,15 @@ def landing_page():
         st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
         st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
 
-        # Super-Important: Default Login
+        # Default Login selected
         option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
-        # Super-Important: Empty check
-        if not username or not password:
-            st.warning("Enter username & password")
-            st.markdown('</div>', unsafe_allow_html=True)
-            return
-
+        # ------------------------
         # LOGIN
+        # ------------------------
         if option == "Login":
             if st.button("Login"):
                 if login_user(username, password):
@@ -76,12 +58,35 @@ def landing_page():
                 else:
                     st.error("Invalid Credentials")
 
+        # ------------------------
         # REGISTER
+        # ------------------------
         else:
             if st.button("Register"):
                 if register_user(username, password):
                     st.success("Registered Successfully, now Login")
                 else:
                     st.error("User already exists")
+
+        # ------------------------
+        # DEBUG SECTION
+        # ------------------------
+        st.markdown("---")
+
+        st.write("📁 Users file location:", FILE)
+
+        if st.button("Show Users Data"):
+            try:
+                df = pd.read_csv(FILE)
+                st.dataframe(df)
+            except:
+                st.warning("File not found yet")
+
+        if st.button("Download users.csv"):
+            try:
+                with open(FILE, "rb") as f:
+                    st.download_button("Click to Download", f, file_name="users.csv")
+            except:
+                st.warning("File not found yet")
 
         st.markdown('</div>', unsafe_allow_html=True)
