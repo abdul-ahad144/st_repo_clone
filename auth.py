@@ -15,11 +15,11 @@ def load_users():
 
     df = pd.read_csv(FILE, dtype=str)
 
-    # Super-Important: Clean data
+    # Clean data
     df["username"] = df["username"].astype(str).str.strip()
     df["password"] = df["password"].astype(str).str.strip()
 
-    # Super-Important: Add admin if missing
+    # Add admin if missing
     if ADMIN_USER not in df["username"].values:
         new = pd.DataFrame([[ADMIN_USER, ADMIN_PASS]], columns=["username", "password"])
         df = pd.concat([df, new], ignore_index=True)
@@ -39,6 +39,8 @@ def register_user(username, password):
 
     new = pd.DataFrame([[username, password]], columns=["username", "password"])
     df = pd.concat([df, new], ignore_index=True)
+
+    # Super-Important: Save file
     df.to_csv(FILE, index=False)
 
     return True
@@ -49,10 +51,6 @@ def login_user(username, password):
 
     username = str(username).strip()
     password = str(password).strip()
-
-    # Super-Important: Debug print
-    print("DATA:\n", df)
-    print("INPUT:", username, password)
 
     user = df[
         (df["username"] == username) &
