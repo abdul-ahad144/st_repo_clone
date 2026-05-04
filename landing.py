@@ -40,7 +40,6 @@ def landing_page():
         st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
         st.markdown('<div class="subtitle">Login / Register</div>', unsafe_allow_html=True)
 
-        # Default Login selected
         option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
         username = st.text_input("Username")
@@ -52,8 +51,12 @@ def landing_page():
         if option == "Login":
             if st.button("Login"):
                 if login_user(username, password):
+
+                    # Super-Important: Save login state
                     st.session_state.logged_in = True
                     st.session_state.page = "dashboard"
+                    st.session_state.user = username   # 👈 VERY IMPORTANT
+
                     st.rerun()
                 else:
                     st.error("Invalid Credentials")
@@ -68,25 +71,22 @@ def landing_page():
                 else:
                     st.error("User already exists")
 
-        # ------------------------
-        # DEBUG SECTION
-        # ------------------------
-        st.markdown("---")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.write("📁 Users file location:", FILE)
+    # ------------------------
+    # ADMIN PANEL (OUTSIDE CARD)
+    # ------------------------
+    if st.session_state.get("user") == "admin":
+
+        st.markdown("---")
+        st.subheader("📁 Users Data (Admin Only)")
+
+        st.write("File Location:", FILE)
 
         if st.button("Show Users Data"):
-            try:
-                df = pd.read_csv(FILE)
-                st.dataframe(df)
-            except:
-                st.warning("File not found yet")
+            df = pd.read_csv(FILE)
+            st.dataframe(df)
 
         if st.button("Download users.csv"):
-            try:
-                with open(FILE, "rb") as f:
-                    st.download_button("Click to Download", f, file_name="users.csv")
-            except:
-                st.warning("File not found yet")
-
-        st.markdown('</div>', unsafe_allow_html=True)
+            with open(FILE, "rb") as f:
+                st.download_button("Click to Download", f, file_name="users.csv")
