@@ -4,41 +4,70 @@ from auth import login_user, register_user, FILE
 
 def landing_page():
 
-    # ---------------- SAFE UI ----------------
+    # ---------------- SASSY UI ----------------
     st.markdown("""
     <style>
 
-    body {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+    /* Background */
+    .stApp {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     }
 
+    /* Glass Card */
     .card {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        max-width: 400px;
-        margin: auto;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 420px;
+        margin: 80px auto;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.2);
     }
 
+    /* Title */
     .title {
-        font-size: 26px;
+        font-size: 30px;
         font-weight: bold;
         text-align: center;
+        color: white;
     }
 
     .subtitle {
         text-align: center;
-        color: gray;
-        margin-bottom: 20px;
+        color: #ddd;
+        margin-bottom: 25px;
     }
 
+    /* Inputs */
+    .stTextInput input {
+        background: rgba(255,255,255,0.2) !important;
+        color: white !important;
+        border-radius: 10px;
+        border: none;
+    }
+
+    /* Button */
     .stButton button {
         width: 100%;
-        border-radius: 10px;
-        background: #ff7b00;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #ff512f, #dd2476);
         color: white;
         font-weight: bold;
+        padding: 12px;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .stButton button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #ff512f;
+    }
+
+    /* Radio */
+    .stRadio > div {
+        justify-content: center;
+        color: white;
     }
 
     </style>
