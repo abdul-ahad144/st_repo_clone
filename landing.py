@@ -3,7 +3,7 @@ from auth import login_user, register_user
 
 def landing_page():
 
-    # -------- UI --------
+    # -------- Background --------
     st.markdown("""
     <style>
     .stApp {
@@ -12,6 +12,7 @@ def landing_page():
 
     header {visibility: hidden;}
 
+    /* Input underline style */
     .stTextInput input {
         background: transparent !important;
         border: none !important;
@@ -35,46 +36,33 @@ def landing_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # -------- CENTER --------
-    left, center, right = st.columns([1,2,1])
+    # -------- CENTER USING COLUMNS --------
+    col1, col2, col3 = st.columns([1, 2, 1])
 
-    with center:
+    with col2:
 
         st.markdown("<h2 style='text-align:center;'>User Login</h2>", unsafe_allow_html=True)
 
-        option = st.radio("", ["Login", "Register"], horizontal=True)
+        option = st.radio("", ["Login", "Register"], horizontal=True, index=0)
 
         username = st.text_input("Email ID")
         password = st.text_input("Password", type="password")
 
-        # -------- LOGIN BUTTON --------
-        login_clicked = st.button("LOGIN", use_container_width=True)
+        # LOGIN
+        if option == "Login":
+            if st.button("LOGIN"):
+                if login_user(username, password):
+                    st.session_state.logged_in = True
+                    st.session_state.page = "dashboard"
+                    st.session_state.user = username
+                    st.rerun()
+                else:
+                    st.error("Invalid Credentials")
 
-        # -------- LOGIN LOGIC --------
-        if option == "Login" and login_clicked:
-            if login_user(username, password):
-                st.session_state.logged_in = True
-                st.session_state.page = "dashboard"
-                st.session_state.user = username
-                st.rerun()
-            else:
-                st.error("Invalid Credentials")
-
-        # -------- REGISTER --------
-        if option == "Register":
-
-            question = st.selectbox("Security Question", [
-                "Your favourite pet?",
-                "Your childhood school?",
-                "Your favourite colour?"
-            ])
-
-            answer = st.text_input("Answer")
-
-            register_clicked = st.button("REGISTER", use_container_width=True)
-
-            if register_clicked:
-                if register_user(username, password, question, answer):
+        # REGISTER
+        else:
+            if st.button("REGISTER"):
+                if register_user(username, password):
                     st.success("Registered Successfully")
                 else:
                     st.error("User already exists")
