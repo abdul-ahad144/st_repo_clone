@@ -6,30 +6,36 @@ def landing_page():
     st.markdown("""
     <style>
 
-    /* Light Royal Blue Background */
+    /* Background */
     .stApp {
         background: linear-gradient(135deg, #dbeafe, #eff6ff);
     }
 
-    /* ONLY remove top header safely */
+    /* Hide header only */
     header {visibility: hidden;}
 
-    /* Center Card */
+    /* Full screen center */
+    .center-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+    }
+
+    /* Card */
     .card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(12px);
         border-radius: 18px;
         padding: 35px;
-        max-width: 400px;
-        margin: 120px auto;
+        width: 380px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
-    /* Title */
     .title {
+        text-align: center;
         font-size: 28px;
         font-weight: bold;
-        text-align: center;
         color: #1e3a8a;
     }
 
@@ -39,14 +45,12 @@ def landing_page():
         margin-bottom: 20px;
     }
 
-    /* Inputs */
     .stTextInput input {
         border-radius: 10px !important;
-        padding: 10px;
         border: 1px solid #cbd5f5;
+        padding: 10px;
     }
 
-    /* Button */
     .stButton button {
         width: 100%;
         border-radius: 10px;
@@ -54,16 +58,8 @@ def landing_page():
         color: white;
         font-weight: bold;
         padding: 10px;
-        border: none;
-        transition: 0.3s;
     }
 
-    .stButton button:hover {
-        background: #2563eb;
-        transform: scale(1.03);
-    }
-
-    /* Radio center */
     .stRadio > div {
         justify-content: center;
     }
@@ -71,7 +67,8 @@ def landing_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # ---------------- CARD ----------------
+    # -------- CENTER WRAPPER --------
+    st.markdown('<div class="center-box">', unsafe_allow_html=True)
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown('<div class="title">🚀 PragyanAI</div>', unsafe_allow_html=True)
@@ -99,4 +96,5 @@ def landing_page():
             else:
                 st.error("User already exists")
 
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
